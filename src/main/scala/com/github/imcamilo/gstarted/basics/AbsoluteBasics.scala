@@ -25,6 +25,7 @@ object Expressions extends App {
   var aVariable: Int = 4
 
   val a = 1 + 2 //EXPRESSION
+
   println(a)
 
   println(2 + 3 * 4)

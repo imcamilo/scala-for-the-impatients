@@ -24,17 +24,13 @@ object Recursion extends App {
    */
 
   def betterFactorial(n: Int): BigInt = {
-
     @scala.annotation.tailrec
     def factorialHelper(x: Int, accumulator: BigInt): BigInt = {
       if (x <= 1) accumulator
       else factorialHelper(x - 1, x * accumulator) //TAL RECURSION = use recursive call as the LAST expression
     }
-
     factorialHelper(n, 1)
-
   }
-
   println(betterFactorial(5000))
 
   //WHEN YOU NEED LOOPS, USE TAIL RECURSION
@@ -48,7 +44,6 @@ object Recursion extends App {
   def concatenateTailrec(aString: String, n: Int, accumulator: String): String =
     if (n <= 0) accumulator
     else concatenateTailrec(aString, n - 1, aString + "_" + accumulator)
-
   println(concatenateTailrec("hi", 23, ""))
 
   def isPrime(n: Int): Boolean = {
@@ -56,7 +51,6 @@ object Recursion extends App {
       if (!isStillPrime) false
       else if (t <= 1) true
       else isPrimeTailRec(t - 1, n % t != 0 && isStillPrime)
-
     isPrimeTailRec(n / 2, true)
   }
 
@@ -67,12 +61,9 @@ object Recursion extends App {
     def fiboTailRec(i: Int, last: Int, nextLast: Int): Int =
       if (i >= n) last
       else fiboTailRec(i + 1, last + nextLast, last)
-
     if (n <= 2) 1
     else fiboTailRec(2, 1, 1)
-
   }
-
   println(fibonacciSeq(8))
 
 }

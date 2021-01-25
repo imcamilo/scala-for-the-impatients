@@ -20,7 +20,6 @@ object CallByNameAndByValue extends App {
   calledByName(System.nanoTime())
 
   def infiniteRec(): Int = 1 + infiniteRec()
-
   def printFirst(x: Int, y: => Int) = println(x)
 
   //printFirst(infiniteRec(), 34) //dont work, stackoverflow

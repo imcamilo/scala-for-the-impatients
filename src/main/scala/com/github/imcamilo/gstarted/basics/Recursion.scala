@@ -1,5 +1,7 @@
 package com.github.imcamilo.gstarted.basics
 
+import scala.annotation.tailrec
+
 object Recursion extends App {
 
   def factorial(n: Int): Int = {
@@ -24,7 +26,7 @@ object Recursion extends App {
    */
 
   def betterFactorial(n: Int): BigInt = {
-    @scala.annotation.tailrec
+    @tailrec
     def factorialHelper(x: Int, accumulator: BigInt): BigInt = {
       if (x <= 1) accumulator
       else factorialHelper(x - 1, x * accumulator) //TAL RECURSION = use recursive call as the LAST expression
@@ -41,23 +43,26 @@ object Recursion extends App {
    * 3. FIB FUNCTION
    */
 
+  @tailrec
   def concatenateTailrec(aString: String, n: Int, accumulator: String): String =
     if (n <= 0) accumulator
     else concatenateTailrec(aString, n - 1, aString + "_" + accumulator)
   println(concatenateTailrec("hi", 23, ""))
 
   def isPrime(n: Int): Boolean = {
+    @tailrec
     def isPrimeTailRec(t: Int, isStillPrime: Boolean): Boolean =
       if (!isStillPrime) false
       else if (t <= 1) true
       else isPrimeTailRec(t - 1, n % t != 0 && isStillPrime)
-    isPrimeTailRec(n / 2, true)
+    isPrimeTailRec(n / 2, isStillPrime = true)
   }
 
   println(isPrime(7))
   println(isPrime(53532))
 
   def fibonacciSeq(n: Int): Int = {
+    @tailrec
     def fiboTailRec(i: Int, last: Int, nextLast: Int): Int =
       if (i >= n) last
       else fiboTailRec(i + 1, last + nextLast, last)

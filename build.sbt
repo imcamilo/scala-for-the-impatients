@@ -1,6 +1,6 @@
 scalaVersion := "2.13.1"
 
-name := "gstarted-a"
+name := "scala-review"
 organization := "com.github.imcamilo"
 version := "1.0"
 

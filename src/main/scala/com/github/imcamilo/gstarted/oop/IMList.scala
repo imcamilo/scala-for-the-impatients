@@ -118,14 +118,6 @@ object IMListGenericsTest extends App {
 
 object IMListExpandedTest extends App {
 
-  trait MyPredicate[-T] {
-    def test(value: T): Boolean
-  }
-
-  trait MyTransformer[-A, B] {
-    def transform(input: A): B
-  }
-
   abstract class IMList[+A] {
 
     def head: A
@@ -140,11 +132,12 @@ object IMListExpandedTest extends App {
 
     override def toString: String = s"[$printElements]"
 
-    def map[B](transformer: MyTransformer[A, B]): IMList[B]
+    //high order functions
+    def map[B](transformer: A => B): IMList[B]
 
-    def filter(test: MyPredicate[A]): IMList[A]
+    def filter(test: A => Boolean): IMList[A]
 
-    def flatMap[B](transformer: MyTransformer[A, IMList[B]]): IMList[B]
+    def flatMap[B](transformer: A => IMList[B]): IMList[B]
 
     //concatenation
     def ++[B >: A](imList: IMList[B]): IMList[B]
@@ -163,11 +156,11 @@ object IMListExpandedTest extends App {
 
     override def printElements: String = ""
 
-    override def map[B](transformer: MyTransformer[Nothing, B]): IMList[B] = Empty
+    override def map[B](transformer: Nothing => B): IMList[B] = Empty
 
-    override def filter(test: MyPredicate[Nothing]): IMList[Nothing] = Empty
+    override def filter(test: Nothing => Boolean): IMList[Nothing] = Empty
 
-    override def flatMap[B](transformer: MyTransformer[Nothing, IMList[B]]): IMList[B] = Empty
+    override def flatMap[B](transformer: Nothing => IMList[B]): IMList[B] = Empty
 
     override def ++[B >: Nothing](imList: IMList[B]): IMList[B] = imList
 
@@ -195,8 +188,8 @@ object IMListExpandedTest extends App {
      * = new Cons(2, new Cons(4, new Cons(6, new Cons(8, Empty.map(n * 2)))))
      * = new Cons(2, new Cons(4, new Cons(6, new Cons(8, Empty))))
      */
-    override def map[B](transformer: MyTransformer[A, B]): IMList[B] =
-      new Cons(transformer.transform(hd), tl.map(transformer))
+    override def map[B](transformer: A => B): IMList[B] =
+      new Cons(transformer(hd), tl.map(transformer))
 
     /**
      * [1,2,3,4].filter(n % 2 == 0)
@@ -207,8 +200,8 @@ object IMListExpandedTest extends App {
      * = new Cons(2, new Cons(4, Empty.filter(n % 2 == 0)))
      * = new Cons(2, new Cons(4, Empty))
      */
-    override def filter(predicate: MyPredicate[A]): IMList[A] =
-      if (predicate.test(hd)) new Cons(hd, tl.filter(predicate))
+    override def filter(predicate: A => Boolean): IMList[A] =
+      if (predicate(hd)) new Cons(hd, tl.filter(predicate))
       else tl.filter(predicate)
 
     /**
@@ -227,8 +220,8 @@ object IMListExpandedTest extends App {
      * [1,2] ++ [2,3] ++ Empty
      * [1,2,2,3]
      */
-    override def flatMap[B](transformer: MyTransformer[A, IMList[B]]): IMList[B] =
-      transformer.transform(hd) ++ tl.flatMap(transformer)
+    override def flatMap[B](transformer: A => IMList[B]): IMList[B] =
+      transformer(hd) ++ tl.flatMap(transformer)
 
   }
 
@@ -240,12 +233,16 @@ object IMListExpandedTest extends App {
   println(listOfIntegers.toString)
   println(listOfStrings.toString)
 
-  println(listOfIntegers.map((input: Int) => input * 2)) //new AnonymousClass
+  println(listOfIntegers.map(new Function[Int, Int] {
+    override def apply(v1: Int): Int = v1 * 2
+  })) //new AnonymousClass
 
-  println(listOfIntegers.filter((value: Int) => value % 2 == 0).toString) //new AnonymousClass
+  println(listOfIntegers.filter(new Function[Int, Boolean] {
+    override def apply(v1: Int): Boolean = v1 % 2 == 0
+  })) //new AnonymousClass
 
-  println(listOfIntegers.flatMap(new MyTransformer[Int, IMList[Int]] {
-    override def transform(input: Int): IMList[Int] = new Cons(input, new Cons(input + 1, Empty))
+  println(listOfIntegers.flatMap(new Function[Int, IMList[Int]] {
+    override def apply(v1: Int): IMList[Int] = new Cons(v1, new Cons(v1 + 1, Empty))
   }).toString)
 
   println(listOfIntegers == cloneListOfIntegers)

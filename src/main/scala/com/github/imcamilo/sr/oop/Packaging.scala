@@ -1,8 +1,8 @@
-package com.github.imcamilo.gstarted.oop
+package com.github.imcamilo.sr.oop
 
 //use _ only when you need it
 
-import com.github.imcamilo.gstarted.basics.{Recursion, SmartStrings, DefaultArgs => DefaultsArguments}
+import com.github.imcamilo.sr.basics.{Recursion, SmartStrings, DefaultArgs => DefaultsArguments}
 
 import java.util.Date
 import java.sql.{Date => SqlDate}

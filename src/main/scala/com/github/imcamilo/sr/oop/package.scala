@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted
+package com.github.imcamilo.sr
 
 package object oop {
 

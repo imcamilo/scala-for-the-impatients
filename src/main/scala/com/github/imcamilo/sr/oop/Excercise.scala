@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.oop
+package com.github.imcamilo.sr.oop
 
 object Excercise extends App {
   val author = new Writer("Charles", "Dickens", 1812)

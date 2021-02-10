@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.functional
+package com.github.imcamilo.sr.functional
 
 object WhatsAFunction extends App {
 

@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.collection
+package com.github.imcamilo.sr.collection
 
 object IMListIntTest extends App {
 

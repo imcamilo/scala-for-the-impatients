@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.oop
+package com.github.imcamilo.sr.oop
 
 object Basics extends App {
 

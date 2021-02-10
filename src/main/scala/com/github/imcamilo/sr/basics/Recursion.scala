@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.basics
+package com.github.imcamilo.sr.basics
 
 import scala.annotation.tailrec
 

@@ -1,4 +1,4 @@
-package com.github.imcamilo.gstarted.oop
+package com.github.imcamilo.gstarted.collection
 
 object IMListIntTest extends App {
 
@@ -180,7 +180,7 @@ object IMListExpandedTest extends App {
       if (tl.isEmpty) "" + hd
       else hd + " " + tl.printElements
 
-    /**
+    /*
      * [1,2,3,4].map(n * 2)
      * = new Cons(2, [2,3,4].map(n * 2))
      * = new Cons(2, new Cons(4, [3,4].map(n * 2)))
@@ -191,7 +191,7 @@ object IMListExpandedTest extends App {
     override def map[B](transformer: A => B): IMList[B] =
       new Cons(transformer(hd), tl.map(transformer))
 
-    /**
+    /*
      * [1,2,3,4].filter(n % 2 == 0)
      * [2,3,4].filter(n % 2 == 0)
      * = new Cons(2, [3,4].filter(n % 2 == 0))
@@ -204,7 +204,7 @@ object IMListExpandedTest extends App {
       if (predicate(hd)) new Cons(hd, tl.filter(predicate))
       else tl.filter(predicate)
 
-    /**
+    /*
      * [1,2] ++ [3,4,5]
      * new Cons(1, [2] ++ [3,4,5])
      * new Cons(1, new Cons(2, Empty ++ [3,4,5]))
@@ -213,7 +213,7 @@ object IMListExpandedTest extends App {
      */
     override def ++[B >: A](imList: IMList[B]): IMList[B] = new Cons(hd, tl ++ imList)
 
-    /**
+    /*
      * [1,2].flatMap(n => [n, n+1])
      * [1,2] ++ [2].flatMap(n => [n, n+1])
      * [1,2] ++ [2,3] ++ Empty.flatMap(n => [n, n+1])
@@ -235,15 +235,16 @@ object IMListExpandedTest extends App {
 
   println(listOfIntegers.map(new Function[Int, Int] {
     override def apply(v1: Int): Int = v1 * 2
-  })) //new AnonymousClass
+  }))
 
   println(listOfIntegers.filter(new Function[Int, Boolean] {
     override def apply(v1: Int): Boolean = v1 % 2 == 0
-  })) //new AnonymousClass
+  }))
 
   println(listOfIntegers.flatMap(new Function[Int, IMList[Int]] {
     override def apply(v1: Int): IMList[Int] = new Cons(v1, new Cons(v1 + 1, Empty))
   }).toString)
 
   println(listOfIntegers == cloneListOfIntegers)
+
 }

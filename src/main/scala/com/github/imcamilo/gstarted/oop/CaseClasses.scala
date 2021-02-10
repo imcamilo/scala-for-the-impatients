@@ -31,6 +31,7 @@ object CaseClasses extends App {
 
   //7. Case Classes have extractors patterns = CCs can be used in Pattern Matching
 
+  //object has the same features.
   case object RepOfChile {
     def name: String = "Republic Of Chile"
   }

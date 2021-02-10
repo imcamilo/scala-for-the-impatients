@@ -151,7 +151,7 @@ object IMListExpandedTest extends App {
 
   }
 
-  object Empty extends IMList[Nothing] {
+  case object Empty extends IMList[Nothing] {
 
     override def head: Nothing = throw new NoSuchElementException
 
@@ -173,7 +173,7 @@ object IMListExpandedTest extends App {
 
   }
 
-  class Cons[+A](hd: A, tl: IMList[A]) extends IMList[A] {
+  case class Cons[+A](hd: A, tl: IMList[A]) extends IMList[A] {
 
     override def head: A = hd
 
@@ -233,6 +233,7 @@ object IMListExpandedTest extends App {
   }
 
   val listOfIntegers: IMList[Int] = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty))))
+  val cloneListOfIntegers: IMList[Int] = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty))))
   val anotherListOfIntegers: IMList[Int] = new Cons(5, new Cons(6, Empty))
   val listOfStrings: IMList[String] = new Cons("Hello", new Cons("Scala", new Cons("World", Empty)))
 
@@ -247,4 +248,5 @@ object IMListExpandedTest extends App {
     override def transform(input: Int): IMList[Int] = new Cons(input, new Cons(input + 1, Empty))
   }).toString)
 
+  println(listOfIntegers == cloneListOfIntegers)
 }

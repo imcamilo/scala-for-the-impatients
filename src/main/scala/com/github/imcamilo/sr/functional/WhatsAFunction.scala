@@ -3,7 +3,7 @@ package com.github.imcamilo.sr.functional
 object WhatsAFunction extends App {
 
   //DREAM : use functions as first class elements
-  //Problem: OOP
+  //PROBLEM: OOP
 
   val doubler = new MyFunction[Int, Int] {
     override def apply(elem: Int): Int = elem * 2
@@ -34,17 +34,26 @@ object WhatsAFunction extends App {
   val concatenator: (String, String) => String = new Function2[String, String, String] {
     override def apply(v1: String, v2: String): String = v1 + v2
   }
-  println(concatenator("Cam","ilo"))
+  println(concatenator("Cam", "ilo"))
 
   //define a functions which takes an int and return another function which takes an int and returns an int
-  val superAdder: (Int) => ((Int) => Int) = new Function1[Int, Function[Int, Int]] {
+  val superAdder: Int => Int => Int = new Function1[Int, Function[Int, Int]] {
     override def apply(v1: Int): Function1[Int, Int] = new Function[Int, Int] {
       override def apply(v2: Int): Int = v1 + v2
     }
   }
   val adder3 = superAdder(3)
   println(adder3(4))
-  println(superAdder(3)(4)) //Curried //Can be call with multiple paramters
+  println(superAdder(3)(4)) //Curried //Can be call with multiple parameters
+
+  val specialOne: Int => Int => Int => Int = new Function1[Int, Function[Int, Function[Int, Int]]] {
+    override def apply(v1: Int): Function[Int, Function[Int, Int]] = new Function1[Int, Function[Int, Int]] {
+      override def apply(v2: Int): Function[Int, Int] = new Function1[Int, Int] {
+        override def apply(v3: Int): Int = v1 + v2 + v3
+      }
+    }
+  }
+  println(specialOne(10)(33)(7))
 
 }
 
@@ -52,7 +61,7 @@ class Action0[A, B] {
   def excute(elem: A): B = ???
 }
 
-trait Action[A, B] {
+trait Action1[A, B] {
   def excute(elem: A): B
 }
 

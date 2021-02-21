@@ -233,17 +233,11 @@ object IMListExpandedTest extends App {
   println(listOfIntegers.toString)
   println(listOfStrings.toString)
 
-  println(listOfIntegers.map(new Function[Int, Int] {
-    override def apply(v1: Int): Int = v1 * 2
-  }))
+  println(listOfIntegers.map(_ * 2))
 
-  println(listOfIntegers.filter(new Function[Int, Boolean] {
-    override def apply(v1: Int): Boolean = v1 % 2 == 0
-  }))
+  println(listOfIntegers.filter(_ % 2 == 0))
 
-  println(listOfIntegers.flatMap(new Function[Int, IMList[Int]] {
-    override def apply(v1: Int): IMList[Int] = new Cons(v1, new Cons(v1 + 1, Empty))
-  }).toString)
+  println(listOfIntegers.flatMap((a: Int) => Cons(a, Cons(a + 1, Empty))).toString)
 
   println(listOfIntegers == cloneListOfIntegers)
 

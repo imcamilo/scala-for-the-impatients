@@ -41,9 +41,15 @@ object HOFAndCurries extends App {
   //function with multiple parameter list
   def curriedFormatter(c: String)(x: Double): String = c.format(x)
   val standarFormat: Double => String = curriedFormatter("%4.2f")
-  val preciseFormat: Double => String = curriedFormatter("%10.8f")
+  val preciseFormat: Double => String = curriedFormatter("%4.8f")
   println(standarFormat(Math.PI))
   println(preciseFormat(Math.PI))
+
+  val curriedFormatter2: String => Double => String = c => x => c.format(x)
+  val standarFormat2: Double => String = curriedFormatter2("%4.2f")
+  val preciseFormat2: Double => String = curriedFormatter2("%4.8f")
+  println(standarFormat2(Math.PI))
+  println(preciseFormat2(Math.PI))
 
   //HOFs
   def toCurry(f: (Int, Int) => Int): (Int => Int => Int) =

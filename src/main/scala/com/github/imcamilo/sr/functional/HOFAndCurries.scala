@@ -1,5 +1,7 @@
 package com.github.imcamilo.sr.functional
 
+import scala.annotation.tailrec
+
 object HOFAndCurries extends App {
 
   val superFunction: (Int, (String, (Int => Boolean)) => Int) => (Int => Int) = null
@@ -11,6 +13,7 @@ object HOFAndCurries extends App {
   //nTimes(f, 3, x) = f(f(f(x))) = nTimes(f, 2, f(x)) = f(f(f(x)))
   //nTimes(f, n, x) = f(f(...f(x))) = nTimes(f, n-1, f(x)) = rec
 
+  @tailrec
   def nTimes(f: Int => Int, n: Int, x: Int): Int =
     if (n <= 0) x
     else nTimes(f, n - 1, f(x))
@@ -41,5 +44,35 @@ object HOFAndCurries extends App {
   val preciseFormat: Double => String = curriedFormatter("%10.8f")
   println(standarFormat(Math.PI))
   println(preciseFormat(Math.PI))
+
+  //HOFs
+  def toCurry(f: (Int, Int) => Int): (Int => Int => Int) =
+    x => y => f(x, y)
+
+  def fromCurry(f: (Int => Int => Int)): (Int, Int) => Int =
+    (x, y) => f(x)(y)
+
+  //FunctionX
+  def compose[A, B, T](f: A => B, g: T => A): T => B =
+    x => f(g(x))
+
+  def andThen[A, B, C](f: A => B, g: B => C): A => C =
+    x => g(f(x))
+
+  def superAdder2:(Int => Int => Int) = toCurry(_ + _)
+  def add4 = superAdder2(4)
+  println(add4(16))
+  println(superAdder2(16)(14))
+
+  val simpleAdder = fromCurry(superAdderFunction)
+  println(simpleAdder(45,4))
+
+  val add2 = (x: Int) => x + 2
+  val times3 = (x: Int) => x * 3
+
+  val composed = compose(add2, times3)
+  val ordered = andThen(add2, times3)
+  println(composed(5))
+  println(ordered(5))
 
 }

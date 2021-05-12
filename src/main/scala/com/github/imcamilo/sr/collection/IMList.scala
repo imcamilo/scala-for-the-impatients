@@ -116,7 +116,7 @@ object IMListGenericsTest extends App {
 
 }
 
-object IMListExpandedTest extends App {
+object IMListLatest extends App {
 
   abstract class IMList[+A] {
 
@@ -142,6 +142,15 @@ object IMListExpandedTest extends App {
     //concatenation
     def ++[B >: A](imList: IMList[B]): IMList[B]
 
+    //hofs
+    def foreach(f: A => Unit): Unit
+
+    def sort(compare: (A, A) => Int): IMList[A]
+
+    def zipWith[B, C](list: IMList[B], zip: (A, B) => C): IMList[C]
+
+    def fold[B](start: B)(operator: (B, A) => B): B
+
   }
 
   case object Empty extends IMList[Nothing] {
@@ -163,6 +172,18 @@ object IMListExpandedTest extends App {
     override def flatMap[B](transformer: Nothing => IMList[B]): IMList[B] = Empty
 
     override def ++[B >: Nothing](imList: IMList[B]): IMList[B] = imList
+
+    //hofs
+    override def foreach(f: Nothing => Unit): Unit = ()
+
+    override def sort(f: (Nothing, Nothing) => Int) = Empty
+
+    override def zipWith[B, C](list: IMList[B], zip: (Nothing, B) => C): IMList[C] = {
+      if (!list.isEmpty) throw new RuntimeException("list dont have the same length")
+      else Empty
+    }
+
+    override def fold[B](start: B)(operator: (B, Nothing) => B): B = start
 
   }
 
@@ -223,22 +244,56 @@ object IMListExpandedTest extends App {
     override def flatMap[B](transformer: A => IMList[B]): IMList[B] =
       transformer(hd) ++ tl.flatMap(transformer)
 
+    //hofs
+
+    override def foreach(f: A => Unit): Unit = {
+      f(head)
+      tail.foreach(f)
+    }
+
+    override def sort(compare: (A, A) => Int): IMList[A] = {
+      def insert(x: A, sortedList: IMList[A]): IMList[A] = {
+        if (sortedList.isEmpty) new Cons(x, Empty)
+        else if (compare(x, sortedList.head) <= 0) new Cons(x, sortedList)
+        else new Cons(sortedList.head, insert(x, sortedList.tail))
+      }
+
+      val sortedTail = tail.sort(compare)
+      insert(head, sortedTail)
+    }
+
+    override def zipWith[B, C](list: IMList[B], zip: (A, B) => C): IMList[C] =
+      if (list.isEmpty) throw new RuntimeException("list dont have the same length")
+      else new Cons[C](zip(head, list.head), tail.zipWith(list.tail, zip))
+
+    /*
+      [1,2,3].fold(0)(+) =
+      = [2, 3].fold(1)(+) =
+      = [3].fold(3)(+) =
+      = [].fold(6)(+)
+      = 6
+     */
+    override def fold[B](start: B)(operator: (B, A) => B): B = {
+      val newStart = operator(start, head)
+      tail.fold(newStart)(operator)
+    }
+
   }
 
+  val listOf3Integers: IMList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
   val listOfIntegers: IMList[Int] = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty))))
   val cloneListOfIntegers: IMList[Int] = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty))))
   val anotherListOfIntegers: IMList[Int] = new Cons(5, new Cons(6, Empty))
   val listOfStrings: IMList[String] = new Cons("Hello", new Cons("Scala", new Cons("World", Empty)))
-
   println(listOfIntegers.toString)
   println(listOfStrings.toString)
-
   println(listOfIntegers.map(_ * 2))
-
   println(listOfIntegers.filter(_ % 2 == 0))
-
   println(listOfIntegers.flatMap((a: Int) => Cons(a, Cons(a + 1, Empty))).toString)
-
   println(listOfIntegers == cloneListOfIntegers)
+  listOfIntegers.foreach(println)
+  println(listOfIntegers.sort((x, y) => y - x))
+  println(listOfStrings.zipWith[Int, String](listOf3Integers, _ + "-" + _))
+  println(listOfIntegers.fold(0)(_ + _))
 
 }

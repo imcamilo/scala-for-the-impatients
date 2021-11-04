@@ -19,13 +19,13 @@ class Generics {
   val emptyListOfInts = IMList.empty[Int]
    */
 
-  //WHEN USE GENERCIS, THERE IS SOME PROBLEMS TO ANSWER..
+  //WHEN USE GENERICS, THERE IS SOME PROBLEMS TO ANSWER..
   //VARIANCE PROBLEM
   class Animal
   class Dog extends Animal
   class Cat extends Animal
 
-  //SI CAT EXTIENDE DE ANIMAL, UNA LISTA DE CAT EXTIENDE DE ANIMAL?
+  //IF CAT EXTENDS ANIMAL, A CAT LIST EXTENDS OF ANIMAL?
   //List[Cat] extends List[Animal]
   //WHAT IF I ADD A NEW DOG TO IT
   //catList.add(new Dog) ??? HARD QUESTION => we return a list of Animals

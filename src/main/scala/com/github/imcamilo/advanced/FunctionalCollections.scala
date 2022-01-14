@@ -3,12 +3,13 @@ package com.github.imcamilo.advanced
 import scala.annotation.tailrec
 
 trait IMSet[A] extends (A => Boolean) {
-  def apply(a: A): Boolean = contains(a) //like a original Set
+  def apply(a: A): Boolean = contains(a)
+
   def contains(a: A): Boolean
 
-  def +(a: A): IMSet[A]
+  def +(elem: A): IMSet[A]
 
-  def ++(anotherSet: IMSet[A]): IMSet[A]
+  def ++(anotherSet: IMSet[A]): IMSet[A] //union
 
   def map[B](f: A => B): IMSet[B]
 
@@ -17,6 +18,13 @@ trait IMSet[A] extends (A => Boolean) {
   def filter(predicate: A => Boolean): IMSet[A]
 
   def foreach(f: A => Unit): Unit
+
+  def -(elem: A): IMSet[A]
+
+  def --(anotherSet: IMSet[A]): IMSet[A] //difference
+
+  def &(anotherSet: IMSet[A]): IMSet[A] //intersection
+
 }
 
 class EmptySet[A] extends IMSet[A] {
@@ -33,6 +41,13 @@ class EmptySet[A] extends IMSet[A] {
   def filter(predicate: A => Boolean): IMSet[A] = this
 
   def foreach(f: A => Unit): Unit = ()
+
+  def -(elem: A): IMSet[A] = this
+
+  def --(anotherSet: IMSet[A]): IMSet[A] = this
+
+  def &(anotherSet: IMSet[A]): IMSet[A] = this
+
 }
 
 class NonEmptySet[A](head: A, tail: IMSet[A]) extends IMSet[A] {
@@ -70,6 +85,16 @@ class NonEmptySet[A](head: A, tail: IMSet[A]) extends IMSet[A] {
     tail.foreach(f)
   }
 
+  def -(elem: A): IMSet[A] =
+    if (head == elem) tail
+    else tail - elem + head
+
+  def --(anotherSet: IMSet[A]): IMSet[A] =
+    filter(a => !anotherSet(a)) //filter(a => !anotherSet.contains(a))
+
+  def &(anotherSet: IMSet[A]): IMSet[A] =
+    filter(anotherSet) //filter(a => anotherSet(a)) //filter(a => anotherSet.contains(a)) //intersection = filtering!
+
 }
 
 object IMSet {
@@ -95,8 +120,13 @@ object IMSet {
 object IMSetPlayground extends App {
   val s = IMSet(1, 2, 3, 4)
   s + 5 ++ IMSet(0, -1, -2) + 3 map (_ * 10) foreach println
-  println("-------")
-  s flatMap(a => IMSet(a, a * 10)) foreach println
-  println("-------")
-  s filter(_ % 3 == 0) foreach println
+  println("------- 1")
+  s flatMap (a => IMSet(a, a * 10)) foreach println
+  println("------- 2")
+  s filter (_ % 3 == 0) foreach println
+  println("------- 3")
+  val x = IMSet(1, 2, 775, 32)
+  s.&(x).foreach(println)
+  println("------- 3")
+  x.--(s).foreach(println)
 }

@@ -72,7 +72,6 @@ object HandlingFailure extends App {
       else throw new RuntimeException("Third party error")
     }
 
-    //
     def getSafeConnection(host: String, port: String): Try[Connection] = Try(getConnection(host, port))
   }
 

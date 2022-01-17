@@ -95,6 +95,4 @@ object CurriesAndPartialAppliedFunctions extends App {
   byFunction(() => 35) //works
   byFunction(parenMethod _) //also works, but warning - unnecessary
 
-
-
 }

@@ -36,5 +36,4 @@ object AnonymousFunctions extends App {
   println(special1(1)(53))
   println(special2(1)(53))
 
-
 }

@@ -120,10 +120,8 @@ object IMSetPlayground extends App {
   val negative = !s //s.unary_! = all the naturals not equal to 1, 2, 3, 4
   println(negative(2))
   println(negative(5))
-
   val negativeEven = negative.filter(_ % 2 == 0)
   println(negativeEven(5))
-
   val negativeEven5 = negativeEven + 5 //all the even numbers > 4  + 5
   println(negativeEven5(5))
 }

@@ -3,7 +3,6 @@ package com.github.imcamilo.sr.oop
 object CaseClasses extends App {
 
   //equals, hashCode, toString
-
   case class Person(name: String, age: Int)
 
   //1. Class parameters are promoted to fields

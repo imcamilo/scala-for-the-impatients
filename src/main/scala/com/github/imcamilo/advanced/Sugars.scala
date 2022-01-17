@@ -84,5 +84,4 @@ object Sugars extends App {
   val aMutableContainer = new Mutable
   aMutableContainer.member = 43 //rewritten as aMutableContainer.member_=(42)
 
-
 }

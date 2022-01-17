@@ -62,28 +62,3 @@ object LazyEvaluation extends App {
   List(1, 2, 3).withFilter(_ % 2 == 0).map(_ + 1) //List[Int]
 
 }
-
-/*
-  lazily evaluated, sigly linked stream of elements,
-  naturals = IMStream.from(1)(x => x + 1) = stream of natural numbers (potentially infinite!)
-  naturals.take(100).foreach(println) //lazily evaluated stream of the first 100 naturals (finite stream)
-  naturals.foreach(println) //will crash - infinite
-  naturals.map(_ * 2) //stream of all even numbers (potentially infinite!)
-*/
-abstract class IMStream[+A] {
-  def isEmpty: Boolean
-  def head: A
-  def tail: IMStream[A]
-  def #::[B >: A](element: B): IMStream[B]
-  def ++[B >: A](elements: IMStream[B]): IMStream[B]
-  def foreach(f: A => Unit)
-  def map[B](f: A => B): IMStream[B]
-  def flatMap[B](f: A => IMStream[B]): IMStream[B]
-  def filter(f: A => Boolean): IMStream[A]
-  def take(a: Int): IMStream[A] //take the first element out of this stream
-  def takeAsList(a: Int): List[A]
-}
-
-object IMStream {
-  def from[A](start: A)(generator: A => A): IMStream[A] = ???
-}

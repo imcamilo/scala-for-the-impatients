@@ -84,7 +84,6 @@ class PropertyBaseSet[A](property: A => Boolean) extends IMSet[A] {
   def politelyFail = throw new IllegalArgumentException("Really deep rabbit hole!")
 }
 
-
 object IMSet {
   /**
    * val imset = IMSet(1, 2, 3) = buildSet(seq(1,2,3), [])

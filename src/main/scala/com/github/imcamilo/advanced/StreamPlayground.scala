@@ -14,7 +14,7 @@ abstract class IMStream[+A] {
   def head: A
   def tail: IMStream[A]
   def #::[B >: A](element: B): IMStream[B]
-  def ++[B >: A](anotherStream: IMStream[B]): IMStream[B]
+  def ++[B >: A](anotherStream: => IMStream[B]): IMStream[B]
   def foreach(f: A => Unit)
   def map[B](f: A => B): IMStream[B]
   def flatMap[B](f: A => IMStream[B]): IMStream[B]
@@ -39,7 +39,7 @@ object EmptyStream extends IMStream[Nothing] {
   def head: Nothing = throw new NoSuchElementException
   def tail: IMStream[Nothing] = throw new NoSuchElementException
   def #::[B >: Nothing](element: B): IMStream[B] = new Cons(element, this)
-  def ++[B >: Nothing](anotherStream: IMStream[B]): IMStream[B] = anotherStream
+  def ++[B >: Nothing](anotherStream: => IMStream[B]): IMStream[B] = anotherStream
   def foreach(f: Nothing => Unit): Unit = ()
   def map[B](f: Nothing => B): IMStream[B] = this
   def flatMap[B](f: Nothing => IMStream[B]): IMStream[B] = this
@@ -56,7 +56,7 @@ class Cons[+A](hd: A, tl: => IMStream[A]) extends IMStream[A] {
   val prepend = 1 #:: s = new Cons(1, s)
    */
   def #::[B >: A](element: B): IMStream[B] = new Cons(element, this)
-  def ++[B >: A](anotherStream: IMStream[B]): IMStream[B] = new Cons(head, tail ++ anotherStream)
+  def ++[B >: A](anotherStream: => IMStream[B]): IMStream[B] = new Cons(head, tail ++ anotherStream)
   def foreach(f: A => Unit): Unit = {
     f(head)
     tail.foreach(f)
@@ -96,5 +96,23 @@ object StreamPlayground extends App {
 
   println(startFrom0.map(_ * 2).take(100).toList())
   println(startFrom0.flatMap(a => new Cons(a, new Cons(a + 1, EmptyStream))).take(10).toList())
+  println(startFrom0.filter(_ < 10).take(10).take(20).toList())
 
+  //stream of fibbonacci numbers
+  //stream of prime numbers with Eratosthenes' sieve, filter divisibles by 2 and 3
+
+  /*
+  [ first, [ ...
+  [ first, fibonacci(second, first + second) ]
+   */
+  def fibonacci(first: BigInt, second: BigInt): IMStream[BigInt] =
+    new Cons[BigInt](first, fibonacci(second, first + second))
+
+  println(fibonacci(1, 1).take(100).toList())
+
+  def eratosthenes(numbers: IMStream[Int]): IMStream[Int] =
+    if (numbers.isEmpty) numbers
+    else new Cons(numbers.head, eratosthenes(numbers.tail.filter(_ % numbers.head != 0)))
+
+  println(eratosthenes(IMStream.from(2)(_ + 1)).take(100).toList())
 }

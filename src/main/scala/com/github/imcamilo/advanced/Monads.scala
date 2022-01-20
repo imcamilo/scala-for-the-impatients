@@ -17,7 +17,7 @@ package com.github.imcamilo.advanced
  */
 object Monads extends App {
 
-  //my own Try monad
+  //Try Monad
 
   trait Attempt[+A] {
     def flatMap[B](f: A => Attempt[B]): Attempt[B]
@@ -77,6 +77,49 @@ object Monads extends App {
     throw new RuntimeException("My own monad!")
   }
   println(attempt)
+
+  //Lazy Monad
+
+  class Lazy[+A](value: => A) {
+    private lazy val internalValue = value
+    def use: A = internalValue
+    def flatMap[B](f: (=> A) => Lazy[B]): Lazy[B] = f(internalValue)
+  }
+  object Lazy {
+    def apply[A](value: => A): Lazy[A] = new Lazy(value)
+  }
+
+  val lazyInstance = Lazy {
+    println("Today I dont feel so well")
+    42
+  }
+  val flatMapInstance = lazyInstance.flatMap(x => Lazy {
+    10 * x
+  })
+  val flatMapInstance2 = lazyInstance.flatMap(x => Lazy {
+    10 * x
+  })
+  flatMapInstance.use
+  flatMapInstance2.use
+
+  /*
+  left-identity
+
+  unit.flatMap(f) = f(v)
+  Lazy(v).flatMap(f) = f(v)
+
+  right-identity
+
+  l.flatMap(unit) = l
+  Lazy(v).flatMap(x => Lazy(x)) = Lazy(v)
+
+  associativity
+
+  l.flatMap(f).flatMap(g) = l.flatMap(x => f(x).flatMap(g))
+  Lazy(v).flatMap(f).flatMap(g) = f(v).flatMap(g)
+  Lazy(v).flatMap(x => f(x).flatMap(g)) = f(v).flatMap(g)
+   */
+
 
 
 }

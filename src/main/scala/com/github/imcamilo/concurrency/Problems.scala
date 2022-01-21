@@ -1,6 +1,7 @@
 package com.github.imcamilo.concurrency
 
-object JVMConcurrencyProblems {
+//JVM Concurrency Problems
+object Problems {
 
   def runInParallel(): Unit = {
     var x = 0

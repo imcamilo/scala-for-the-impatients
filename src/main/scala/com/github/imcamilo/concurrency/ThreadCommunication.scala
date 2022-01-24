@@ -1,5 +1,8 @@
 package com.github.imcamilo.concurrency
 
+import scala.collection.mutable
+import scala.util.Random
+
 object ThreadCommunication extends App {
 
   //the producer-consumer problem
@@ -76,8 +79,6 @@ object ThreadCommunication extends App {
     more code
   }                           //but only after I'm done and unlock the monitor
 
-
-
   */
 
   def smarterProducerConsumer(): Unit = {
@@ -105,6 +106,58 @@ object ThreadCommunication extends App {
     producer.start()
   }
 
-  smarterProducerConsumer()
+  //smarterProducerConsumer()
+
+  /*
+    producer -> [ ? ? ? ] -> consumer
+   */
+  def largeBufferProducerConsumer(): Unit = {
+    val buffer: mutable.Queue[Int] = new mutable.Queue[Int]
+    val capacity = 3
+
+    val consumer = new Thread(() => {
+      val random = new Random()
+      while (true) {
+        buffer.synchronized {
+          if (buffer.isEmpty) {
+            println("[consumer] buffer empty, waiting...")
+            buffer.wait()
+          }
+          //there must be at least ONE value in the buffer
+          val x = buffer.dequeue()
+          println("[consumer] consumed " + x)
+          //hey producer, there is an empty space available, are you lazy?
+          buffer.notify()
+        }
+        Thread.sleep(random.nextInt(500))
+      }
+    })
+
+    val producer = new Thread(() => {
+      val random = new Random()
+      var i = 0
+      while (true) {
+        buffer.synchronized {
+          if (buffer.size == capacity) {
+            println("[producer] buffer is full, waiting...")
+            buffer.wait()
+          }
+          //there must be at least ONE EMPTY SPACE in the buffer
+          println("[producer] producing " + i)
+          buffer.enqueue(i)
+          //hey consumer, new food for you
+          buffer.notify()
+          i += 1
+        }
+        Thread.sleep(random.nextInt(500))
+      }
+    })
+
+    consumer.start()
+    producer.start()
+  }
+
+
+  largeBufferProducerConsumer
 
 }

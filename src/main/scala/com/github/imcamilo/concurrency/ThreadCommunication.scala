@@ -175,7 +175,7 @@ object ThreadCommunication extends App {
           }
           val x = buffer.dequeue()
           println(s"[consumer $id] consumed " + x)
-          buffer.notify()
+          buffer.notifyAll() //prevents deadlock
         }
         Thread.sleep(random.nextInt(500))
       }
@@ -194,7 +194,7 @@ object ThreadCommunication extends App {
           }
           println(s"[producer $id] producing " + i)
           buffer.enqueue(i)
-          buffer.notify()
+          buffer.notifyAll() //prevents deadlock
           i += 1
         }
         Thread.sleep(random.nextInt(500))
@@ -209,6 +209,74 @@ object ThreadCommunication extends App {
     (1 to nProducers).foreach(a => new Producer(a, buffer, capacity).start())
   }
 
-  multiBufferProducerAndConsumer(3, 3)
+  //multiBufferProducerAndConsumer(3, 3)
+
+  //1 - where notifyAll acts in different way than notify?
+  def testNotifyAll(): Unit = {
+    val bell = new Object
+    (1 to 10).foreach(a => new Thread(() => {
+      bell.synchronized {
+        println(s"[thread] $a waiting...")
+        bell.wait()
+        println(s"[thread] $a hooray!...")
+      }
+    }).start())
+
+    new Thread(() => {
+      Thread.sleep(2000)
+      bell.synchronized {
+        println(s"[announcer] rock and roll")
+        bell.notify()
+      }
+    }).start()
+  }
+
+  //testNotifyAll()
+
+  //2 - create deadlock
+  case class Friend(name: String) {
+    def bow(other: Friend): Unit = {
+      this.synchronized {
+        println(s"$this: I am bowing to my friend $other")
+        other.rise(this)
+        println(s"$this: My friend $other has risen")
+      }
+    }
+
+    def rise(other: Friend): Unit = {
+      this.synchronized {
+        println(s"$this: I am rising to my friend $other")
+      }
+    }
+
+    var side = "right"
+
+    def switchSide(): Unit = {
+      if (side == "right") side = "left"
+      else side = "right"
+    }
+
+    def pass(other: Friend): Unit = {
+      while (this.side == other.side) {
+        println(s"$this: Oh, but please, $other, feel free to pass")
+        switchSide()
+        Thread.sleep(1000)
+      }
+    }
+  }
+
+  val sam = Friend("Sam")
+  val frodo = Friend("Frodo")
+
+  //new Thread(() => sam.bow(frodo)).start() //sam's lock,    |   then frodo's lock
+  //new Thread(() => frodo.bow(sam)).start() //frodo's lock,  |   then sam's lock
+
+  //create livelock
+  new Thread(() => {
+    sam.pass(frodo)
+  }).start()
+  new Thread(() => {
+    frodo.pass(sam)
+  }).start()
 
 }

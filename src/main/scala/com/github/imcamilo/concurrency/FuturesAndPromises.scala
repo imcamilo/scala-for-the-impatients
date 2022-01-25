@@ -3,7 +3,8 @@ package com.github.imcamilo.concurrency
 //important scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future, Promise}
 import scala.util.{Failure, Random, Success}
 
 object FuturesAndPromises extends App {
@@ -110,4 +111,57 @@ object FuturesAndPromises extends App {
   //finally the exception of the first future will be contained in the failure
   val fallBackResult = SocialNetwork.fetchProfile("unknown id").fallbackTo(SocialNetwork.fetchProfile("fb.id.0-dummy"))
 
+  //online banking app
+  case class User(name: String)
+
+  case class Transaction(sender: String, receiver: String, amount: Double, status: String)
+
+  object BankingApp {
+
+    def fetchUser(name: String): Future[User] = Future {
+      //simulate fetching from db
+      Thread.sleep(500)
+      User(name)
+    }
+
+    def createTransaction(user: User, merchantName: String, amount: Double): Future[Transaction] = Future {
+      //simulate some process
+      Thread.sleep(1000)
+      Transaction(user.name, merchantName, amount, "SUCCESS")
+    }
+
+    def purchase(username: String, item: String, merchantName: String, cost: Double): String = {
+      val transactionStatus = for {
+        user <- fetchUser(username) //fetch users db
+        transaction <- createTransaction(user, merchantName, cost) //create a transaction
+      } yield transaction.status
+      Await.result(transactionStatus, 2.seconds) //wait to transaction to finish
+    }
+    //try to use asynchronous computations with futures and functional operators on them as much as possible
+    //but in the rare situations that you do need to block until a feature is complete, use await
+  }
+
+  println(BankingApp.purchase("Frodo", "The One", "LoTR Store", 53423))
+
+  //Promise
+  val promise = Promise[Int]() //"controller" over a future
+  val future = promise.future //member future that it holds and manages //future is under the management of this promise
+
+  //thread 1 - "consumer" | this knows how to handle the futures completion
+  future.onComplete {
+    case Success(r) => println("[consumer] I have received " + r)
+  }
+  //thread 2 - "producer"
+  val producer = new Thread(() => {
+    println("[producer] crunching numbers")
+    Thread.sleep(500)
+    //"fillfilling" the promise
+    promise.success(42) //this manipulates the internal future to complete with a successfull value, which is then handle in onComplete by some consumer thread
+    println("[producer] done")
+  })
+
+  //so promise pattern
+  //one thread knows how to handle a future and one thread inserts values or insert failures into the future by calling promise.success/promise.failure
+  producer.start()
+  Thread.sleep(1000)
 }

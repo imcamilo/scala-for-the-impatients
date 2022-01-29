@@ -5,7 +5,7 @@ package com.github.imcamilo.concurrency
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future, Promise}
-import scala.util.{Failure, Random, Success}
+import scala.util.{Failure, Random, Success, Try}
 
 object FuturesAndPromises extends App {
 
@@ -137,6 +137,7 @@ object FuturesAndPromises extends App {
       } yield transaction.status
       Await.result(transactionStatus, 2.seconds) //wait to transaction to finish
     }
+
     //try to use asynchronous computations with futures and functional operators on them as much as possible
     //but in the rare situations that you do need to block until a feature is complete, use await
   }
@@ -155,7 +156,7 @@ object FuturesAndPromises extends App {
   val producer = new Thread(() => {
     println("[producer] crunching numbers")
     Thread.sleep(500)
-    //"fillfilling" the promise
+    //"fulfilling" the promise
     promise.success(42) //this manipulates the internal future to complete with a successfull value, which is then handle in onComplete by some consumer thread
     println("[producer] done")
   })
@@ -164,4 +165,80 @@ object FuturesAndPromises extends App {
   //one thread knows how to handle a future and one thread inserts values or insert failures into the future by calling promise.success/promise.failure
   producer.start()
   Thread.sleep(1000)
+
+  //
+  //fulfill a future IMMEDIATELY with a value
+  def fulfullImmediately2[T](value: T): Future[T] = Future(value)
+
+  def fulfullImmediately[T](value: T): Future[T] = Future.successful(value) //faster because the future is fulfilled synchronously (so no thread is needed)
+
+  //inSequence(fa, fb)
+  def inSequence[A, B](first: Future[A], second: Future[B]): Future[B] = first.flatMap(a => second)
+
+  //first(fa, fb) => new future with the first value of the two futures
+  def first[A](fa: Future[A], fb: Future[A]): Future[A] = {
+    val promise = Promise[A]()
+    /*
+    def tryComplete(promise: Promise[A], result: Try[A]) = result match {
+      case Success(a) => try {
+        promise.success(a)
+      } catch {
+        case _ =>
+      }
+      case Failure(e) => try {
+        promise.failure(e)
+      } catch {
+        case _ =>
+      }
+    }
+    */
+    //fa.onComplete(tryComplete(promise, _))
+    fa.onComplete(promise.tryComplete) //this is better and simpler
+    //fb.onComplete(tryComplete(promise, _))
+    fb.onComplete(promise.tryComplete) //this is better and simpler
+    //the result would be the first in finish tryComplete
+    promise.future
+  }
+
+  //last(fa, fb) => new future with the last value
+  def last[A](fa: Future[A], fb: Future[A]): Future[A] = {
+    //1 promise which both futures will try to complete
+    //2 promise which the Last future will complete
+    val bothPromise = Promise[A]
+    val lastPromise = Promise[A]
+    val checkComplete = (result: Try[A]) => if (!bothPromise.tryComplete(result)) lastPromise.complete(result)
+    fa.onComplete(checkComplete)
+    fb.onComplete(checkComplete)
+    lastPromise.future
+  }
+
+  val fast = Future {
+    Thread.sleep(400)
+    8766
+  }
+  val slow = Future {
+    Thread.sleep(1000)
+    8080
+  }
+  first(fast, slow).foreach(println)
+  last(fast, slow).foreach(println)
+
+  //retryUntil
+  def retryUntil[A](action: () => Future[A], condition: A => Boolean): Future[A] =
+    action()
+      .filter(condition)
+      .recoverWith {
+        case _ => retryUntil(action, condition)
+      }
+
+  val random = new Random()
+  val action = () => Future {
+    Thread.sleep(100)
+    val nextValue = random.nextInt(100)
+    println(s"generated $nextValue")
+    nextValue
+  }
+  retryUntil(action, (x: Int) => x < 10).foreach(r => println("settled at result " + r))
+
+  Thread.sleep(7000)
 }

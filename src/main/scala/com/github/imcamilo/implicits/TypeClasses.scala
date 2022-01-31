@@ -40,7 +40,7 @@ object TypeClasses extends App {
   }
 
   //type class instance
-  object UserSerializer extends HTMLSerializer[User] {
+  implicit object UserSerializer extends HTMLSerializer[User] {
     def serialize(user: User): String = s"<p>${user.name} - ${user.age} - ${user.email}</p>"
   }
 
@@ -67,6 +67,10 @@ object TypeClasses extends App {
     def action(value: A): String
   }
 
+  object MyTypeClassTemplate {
+    def apply[A](implicit instance: MyTypeClassTemplate[A]): MyTypeClassTemplate[A] = instance
+  }
+
   /*
   A normal class describes a collection of methods and properties that something must have in order to belong to that specific type
   - On method parameters for example String, then it is known to support the length operation
@@ -82,7 +86,7 @@ object TypeClasses extends App {
     def apply(first: A, second: A): Boolean
   }
 
-  object NamesComparator extends EqualityTypeClass[User] {
+  implicit object NamesComparator extends EqualityTypeClass[User] {
     def apply(first: User, second: User): Boolean = first.name == second.name
   }
 
@@ -93,5 +97,33 @@ object TypeClasses extends App {
   val zeke = User("Zeke", 34, "zeke@aot")
   println(NamesComparator.apply(eren, zeke))
   println(NamesAndEmailComparator.apply(eren, zeke))
+
+  //pt2
+  object HTMLSerializer {
+    def serialize[A](value: A)(implicit serializer: HTMLSerializer[A]): String = {
+      serializer.serialize(value)
+    }
+
+    def apply[A](implicit serializer: HTMLSerializer[A]): HTMLSerializer[A] = serializer
+  }
+
+  implicit object IntSerializer extends HTMLSerializer[Int] {
+    def serialize(value: Int): String = s"<p>bla bla bal $value</p>"
+  }
+
+  println(HTMLSerializer.serialize(8766))
+  println(HTMLSerializer.serialize(eren))
+  //access to the entire type class interface
+  println(HTMLSerializer[User].serialize(eren))
+
+  //Type class pattern for equality
+  object EqualityTypeClass {
+    def apply[A](a: A, b: A)(implicit equalizer: EqualityTypeClass[A]): Boolean = equalizer.apply(a, b)
+  }
+
+  val grisha = User("Grisha", 44, "gri@aot")
+  val anotherGrisha = User("Grisha", 44, "grisha@aot")
+  println(EqualityTypeClass(grisha, anotherGrisha))
+  //AD-HOC Polymorphism
 
 }

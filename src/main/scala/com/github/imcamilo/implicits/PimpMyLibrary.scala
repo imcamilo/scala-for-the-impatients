@@ -10,7 +10,6 @@ object PimpMyLibrary extends App {
   //this pattern often extends AnyVal for memory optimizations
   implicit class RichInt(val value: Int) extends AnyVal {
     def isEven: Boolean = value % 2 == 0
-
     def sqrt: Double = Math.sqrt(value)
   }
 

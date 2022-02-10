@@ -105,7 +105,7 @@ object TypeClasses extends App {
     def toHTML(implicit serializer: HTMLSerializer[C]) = serializer.serialize(value)
   }
 
-  println(eren.toHTML) //println new HTMLEnrichment[User](john).toHTML(UserSerializer)
+  println(eren.toHTML) //println new HTMLEnrichment[User](eren).toHTML(UserSerializer)
   //COOL!
   /*
   - we can extends functionality of any type
@@ -125,7 +125,7 @@ object TypeClasses extends App {
   - conversion with implicit classes --- HTMLEnrichment
    */
 
-  // contex bounds
+  // context bounds
   def htmlBoilerplate[C](content: C)(implicit htmlSerializer: HTMLSerializer[C]) =
     s"<p><ul><li>${content.toHTML(htmlSerializer)}</li></ul><p>"
 

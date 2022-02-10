@@ -1,6 +1,6 @@
 package com.github.imcamilo.implicits
 
-object GivensFor3 {
+object GivensAndExtensionFor3 {
 
   /*
   implicit
@@ -39,6 +39,8 @@ object GivensFor3 {
     import scala.language.implicitConversions
     use Conversion[FromType, ToType]
     use apply method
-   */
 
+  extension method <=> implicit classes using extension clauses
+
+   */
 }

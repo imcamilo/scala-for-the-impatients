@@ -58,7 +58,33 @@ object Variance extends App {
 
   //as we can saw, covariant and contravariance posititions are some compiler restrictions
 
+  /*
+  this wont compile
+    trait AnotherCovariantCage[+C] {
+      def addAnimal(animal: C) //contravariant position
+    }
+  this would be allow:
+    val ccage: CCage[Animal] = new CCage[Cat]
+    ccage.addAnimal(new Dog)
+   */
 
+  class AnotherContravariantCage[-C] {
+    def addAnimal(animal: C) = true
+  }
+  val anotherContravariantCage: AnotherContravariantCage[Cat] = new AnotherContravariantCage[Animal]
+  anotherContravariantCage.addAnimal(new Cat)
+  class Misifu extends Cat
+  anotherContravariantCage.addAnimal(new Misifu)
 
+  class MyList[+C] {
+    //using a supertype of C
+    def add[B >: C](element: B): MyList[B] = new MyList[B] //widening the type
+  }
+  val emptyList = new MyList[Misifu]
+  val animals = emptyList.add(new Misifu)
+  val moreAnimals = animals.add(new Cat)
+  val eventMoreAnimnals = moreAnimals.add(new Dog)
+
+  //METHOD ARGUMENTS ARE IN CONTRAVARIANT POSITION
 
 }

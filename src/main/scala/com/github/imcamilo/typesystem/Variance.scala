@@ -12,7 +12,7 @@ object Variance extends App {
   problem of "inheritance" -> "" 'cause is the problem of type substitution of generics
   */
 
-  //should a cage cat "inherit" from another cage animal?
+  //should a Cage[Cat] "inherit" from another Cage[Animal]?
   class Cage[C]
 
   //yes - covariance
@@ -86,5 +86,34 @@ object Variance extends App {
   val eventMoreAnimnals = moreAnimals.add(new Dog)
 
   //METHOD ARGUMENTS ARE IN CONTRAVARIANT POSITION
+
+  //return types
+  class PetShop[-C] {
+    //def get(isItAPuppy: Boolean): C //METHOD RETURN TYPES IN A COVARIANT POSITION
+    /*
+    val catShop = new PetShop[Animal] {
+      def get(isItAPuppy: Boolean): Animal = new Cat
+    }
+    val dogShop: PetShop[Dog] = catShop
+    dogShop.get(true) //EVIL CAT
+     */
+
+    //using a subtype
+    def get[S <: C](isItAPuppy: Boolean, defaultAnimal: S): S = defaultAnimal
+  }
+  val shop: PetShop[Dog] = new PetShop[Animal]
+  //do not conform to method get's type parameter bounds [S <: com.github.imcamilo.typesystem.Variance.Dog]
+  //val evilCat = shop.get(true, new Cat)
+
+  class TerraNova extends Dog
+  val bigFurry = shop.get(true, new TerraNova)
+
+  /*
+  BIg rule
+  - method arguments are in CONTRAVARIANT positions
+  - return types are in COVARIANT position
+   */
+
+
 
 }

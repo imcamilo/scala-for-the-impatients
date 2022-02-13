@@ -114,6 +114,70 @@ object Variance extends App {
   - return types are in COVARIANT position
    */
 
+  /*
+  1. invariant, covariant, contravariant parking
+    Parking[C](things: List[C]) {
+      def park(vehicle: C)
+      def impound(vehicle: List[C])
+      def checkVehicles(cond: String): List[C]
+    }
+  2. used someone else's API: IList[C]
+  3. Parking = monad!
+    - flatMap
+   */
+
+  class Vehicle
+  class Bike extends Vehicle
+  class Car extends Vehicle
+  class IList[C]
+
+  //1
+  //invariant
+  class ParkingInvariant[C](things: List[C]) {
+    def park(vehicle: C): ParkingInvariant[C] = ???
+    def impound(vehicle: List[C]): ParkingInvariant[C] = ???
+    def checkVehicles(cond: String): List[C] = ???
+    //3
+    def flatMap[B](f: C => ParkingInvariant[B]): ParkingInvariant[B] = ???
+  }
+  //covariant
+  class ParkingCovariant[+C](things: List[C]) {
+    def park[B >: C](vehicle: B): ParkingCovariant[B] = ???
+    def impound[B >: C](vehicle: List[B]): ParkingCovariant[B] = ???
+    def checkVehicles(cond: String): List[C] = ???
+    //3
+    def flatMap[B](f: C => ParkingCovariant[B]): ParkingCovariant[B] = ???
+  }
+  //contravariant
+  class ParkingContravariant[-C](things: List[C]) {
+    def park(vehicle: C): ParkingContravariant[C] = ???
+    def impound(vehicle: List[C]) : ParkingContravariant[C]= ???
+    def checkVehicles[B <: C](cond: String): List[B] = ???
+    //3
+    def flatMap[A <: C, B](f: A => ParkingContravariant[B]): ParkingContravariant[B] = ???
+  }
+
+  /*
+    Rule of thumb
+    - use covariance = COLLECTION OF THINGS
+    - use contravariance = GROUP OF ACTIONS
+   */
+
+
+  //2
+  //covariant
+  class ParkingCovariant2[+C](things: IList[C]) {
+    def park[B >: C](vehicle: B): ParkingCovariant2[B] = ???
+    def impound[B >: C](vehicle: IList[B]): ParkingCovariant2[B] = ???
+    def checkVehicles[B >: C](cond: String): IList[B] = ???
+  }
+  //contravariant
+  class ParkingContravariant2[-C](things: IList[C]) {
+    def park(vehicle: C): ParkingContravariant2[C] = ???
+    def impound[B <: C](vehicle: IList[B]) : ParkingContravariant2[B]= ???
+    def checkVehicles[B <: C](cond: String): IList[B] = ???
+  }
+
 
 
 }

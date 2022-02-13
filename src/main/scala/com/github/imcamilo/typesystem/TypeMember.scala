@@ -53,7 +53,7 @@ object TypeMember extends App {
   }
 
   /*
-  enforce compiler check in compiler time
+  enforce some constraints by the compiler or at compile time
 
   class CustomList(hd: String, tl: CustomList) extends MList with ApplicableToNumbers {
     type A = String

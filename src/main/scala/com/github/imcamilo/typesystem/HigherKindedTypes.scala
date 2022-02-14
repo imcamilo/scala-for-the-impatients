@@ -38,20 +38,20 @@ object HigherKindedTypes extends App {
 
   //So F[_] is either a list or future or option or whatever you have
   //and the type parameter that this monad contains is A
-  trait Monad[F[_], A] {
+  trait Monad[F[_], A] { //higher-kinded type class
     def flatMap[B](f: A => F[B]): F[B]
     def map[B](f: A => B): F[B]
   }
-  class MonadList[A](list: List[A]) extends Monad[List, A] {
+  implicit class MonadList[A](list: List[A]) extends Monad[List, A] {
     override def flatMap[B](f: A => List[B]): List[B] = list.flatMap(f)
     override def map[B](f: A => B): List[B] = list.map(f)
   }
-  class MonadOption[A](option: Option[A]) extends Monad[Option, A] {
+  implicit class MonadOption[A](option: Option[A]) extends Monad[Option, A] {
     override def flatMap[B](f: A => Option[B]): Option[B] = option.flatMap(f)
     override def map[B](f: A => B): Option[B] = option.map(f)
   }
 
-  def multiply[F[_], A, B](ma: Monad[F, A], mb: Monad[F, B]): F[(A, B)] =
+  def multiply[F[_], A, B](implicit ma: Monad[F, A], mb: Monad[F, B]): F[(A, B)] =
     for {
       a <- ma
       b <- mb
@@ -67,7 +67,10 @@ object HigherKindedTypes extends App {
   We wanted a single implementation for multiply, that could apply for anything that has a map
   and a flatmap, only that we used a wrapper insted of the actual types...
 
-  Wouldn't be nice if we can auto convert our little types into the monad rapper counterparts?
+  Wouldn't be nice if we can auto convert our little types into the monad wrapper counterparts?
    */
+  println(multiply(List(1, 2), List("A", "B")))
+  println(multiply(Some(2), Some("Scala")))
+
 
 }

@@ -21,8 +21,9 @@ object Options extends App {
   //chained methods
   def backupMethod(): String = "Valid result"
 
-  val chainedResult = Option(unsafeMethod()).orElse(Option(backupMethod()))
-
+  val chainedResult: Option[String] = Option(unsafeMethod()).orElse(Option(backupMethod()))
+  val chainedResult2: Serializable = Option(unsafeMethod()).getOrElse(Option(backupMethod()))
+  println("chained result 2 " + chainedResult2)
   //Design unsafe APIs
   def betterUnsafeMethod(): Option[String] = None
 

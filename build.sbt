@@ -9,6 +9,8 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.11.0",
   "dev.optics" %% "monocle-core"  % "3.1.0",
   "dev.optics" %% "monocle-macro" % "3.1.0",
+  "dev.zio" %% "zio" % "1.0.4-2",
+  "dev.zio" %% "zio-streams" % "1.0.4-2",
 )
 
 Global / scalacOptions += "-Ymacro-annotations"

@@ -145,11 +145,21 @@ object Zlayers extends zio.App {
       .provideLayer(userBackendLayer) //provide the input for that effect
       .exitCode
 
+    val combining = for {
+      _ <- UserDB.insert(eren)
+      _ <- UserEmailer.notify(eren, message)
+    } yield ()
+    combining.provideLayer(userBackendLayer)
+      .exitCode
+
+    ()
+
   }
   override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
-    UserSuscription.suscribe(eren)
-      .provideLayer(userSuscriptionLayer)
-      .exitCode
+   UserSuscription.suscribe(eren)
+     .provideLayer(userSuscriptionLayer)
+     .exitCode
+
   }
 
 }

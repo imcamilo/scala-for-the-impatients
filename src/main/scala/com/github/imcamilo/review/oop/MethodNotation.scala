@@ -1,5 +1,7 @@
 package com.github.imcamilo.review.oop
 
+import scala.language.postfixOps
+
 object MethodNotation extends App {
 
   class Person(val name: String, favoriteMovie: String, val age: Int = 0) {

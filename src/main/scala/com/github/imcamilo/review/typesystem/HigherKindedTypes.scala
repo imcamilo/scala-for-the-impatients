@@ -23,15 +23,15 @@ object HigherKindedTypes extends App {
       a <- listA
       b <- listB
     } yield (a, b)
-  def multiply[A, B](listA: Option[A], listB: Option[B]): Option[(A, B)] =
+  def multiply[A, B](optionA: Option[A], optionB: Option[B]): Option[(A, B)] =
     for {
-      a <- listA
-      b <- listB
+      a <- optionA
+      b <- optionB
     } yield (a, b)
-  def multiply[A, B](listA: Future[A], listB: Future[B]): Future[(A, B)] =
+  def multiply[A, B](futureA: Future[A], futureB: Future[B]): Future[(A, B)] =
     for {
-      a <- listA
-      b <- listB
+      a <- futureA
+      b <- futureB
     } yield (a, b)
 
   //use a High Kinded Type

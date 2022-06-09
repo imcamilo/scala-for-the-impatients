@@ -19,13 +19,32 @@ object SemigroupsMonoids extends App {
     def apply[T](implicit instance: Semigroup[T]): Semigroup[T] = instance
   }
 
+  trait Monoid[T] extends Semigroup[T] {
+    def empty: T // empty + x == x for all x in the type T //property the monoid need uphold
+  }
+
+  object Monoid {
+    def apply[T](implicit instance: Monoid[T]): Monoid[T] = instance
+  }
+
+  object IntInstances {
+    implicit def intMonoid: Monoid[Int] = new Monoid[Int] {
+      override def empty: Int = 0
+      override def combine(a: Int, b: Int): Int = a + b
+    }
+  }
+  object StringInstances {
+    implicit def stringMonoid: Monoid[String] = new Monoid[String] {
+      override def empty: String = ""
+      override def combine(a: String, b: String): String = a + b
+    }
+  }
+
   // now we can create instances of this semigroup which are applicable for some types that we want to support
   // semigroup for integers
-  object SemigroupInstances {
-    implicit def intSemigroup: Semigroup[Int] = (a: Int, b: Int) => a + b
-    implicit def stringSemigroup: Semigroup[String] = (a: String, b: String) => a + b
-  }
-  import SemigroupInstances._
+
+  import IntInstances._ // cats.instances.int._ - cats.instances.int.given
+  import StringInstances._
   val naturalIntSemigroup = Semigroup[Int]
   val naturalStringSemigroup = Semigroup[String]
   val naturalPort = naturalIntSemigroup.combine(8765, 1)
@@ -50,15 +69,14 @@ object SemigroupsMonoids extends App {
       def |+|(b: T)(implicit semigroup: Semigroup[T]): T = semigroup.combine(a, b)
     }
   }
-  import SemigroupSyntax._
+  import SemigroupSyntax._ // cats.syntax.semigroup.given
   val naturalPort2 = 8765 |+| 1
-  def reduceCompact[T : Semigroup](list: List[T]): T = list.reduce(_ |+| _)
+  def reduceCompact[T: Semigroup](list: List[T]): T = list.reduce(_ |+| _)
 
   println(naturalPort2)
-  val naturalPort3 = reduceCompact(List(12,3,6435))
-  val favPort = reduceCompact(List("The next ", "port is ","6435"))
+  val naturalPort3 = reduceCompact(List(12, 3, 6435))
+  val favPort = reduceCompact(List("The next ", "port is ", "6435"))
   println(naturalPort3)
   println(favPort)
-
 
 }

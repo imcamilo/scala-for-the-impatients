@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "dev.optics" %% "monocle-macro" % "3.1.0",
   "dev.zio" %% "zio" % "1.0.4-2",
   "dev.zio" %% "zio-streams" % "1.0.4-2",
+  "org.scala-lang" % "scala-reflect" % "2.13.6"
 )
 
 Global / scalacOptions += "-Ymacro-annotations"

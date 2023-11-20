@@ -28,7 +28,11 @@ libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % ZIOVersion,
   "dev.zio" %% "zio-streams" % ZIOVersion,
   "org.scala-lang" % "scala-reflect" % "2.13.10",
-  "com.twitter" %% "finagle-http" % FinagleVersion
+  "com.twitter" %% "finagle-http" % FinagleVersion,
+  "co.fs2" %% "fs2-core" % "3.7.0", // available for 2.12, 2.13, 3.2
+  "co.fs2" %% "fs2-io" % "3.7.0", // optional I/O library
+  "co.fs2" %% "fs2-reactive-streams" % "3.7.0", // optional reactive streams interop
+  "co.fs2" %% "fs2-scodec" % "3.7.0" // optional scodec interop
 )
 
 Global / scalacOptions += "-Ymacro-annotations"

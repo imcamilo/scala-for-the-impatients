@@ -1,15 +1,5 @@
 package com.github.imcamilo.typelevel
-
-import cats._
-import cats.implicits._
-import io.circe.generic.auto._
-import io.circe.syntax._
-
-import java.time.Year
-import java.util.UUID
-import scala.collection.mutable
-import scala.util.Try
-
+/*
 object Http4sStarter extends IOApp {
 
   type Actor = String
@@ -33,13 +23,13 @@ object Http4sStarter extends IOApp {
   private def findMoviesByDirector(director: String): List[Movie] = movies.values.filter(_.director == director).toList
 
   /** GET Endpoints
-   *    - get all movies for a director under a given year
-   *    - all actors for a movie
-   *    - details about a director
-   *
-   *  POST Endpoints
-   *    - add a new director
-   */
+ *    - get all movies for a director under a given year
+ *    - all actors for a movie
+ *    - details about a director
+ *
+ *  POST Endpoints
+ *    - add a new director
+ */
 
   // http4s is built on the concept of request and response
   // Http Server:
@@ -132,3 +122,4 @@ object Http4sStarter extends IOApp {
   }
 
 }
+ */

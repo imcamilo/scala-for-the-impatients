@@ -1,11 +1,11 @@
 package com.github.imcamilo.cats
 
-object CatsIntro extends App {
+object CatsIntro {
 
   // Eq simple type class that compiles values at compile time
 
   // checking this. expresion and its false
-  // val aComparison = 2 == "a string"
+  val aComparison = 2 == "a string"
 
   // 1. TYPE CLASS IMPORT
   import cats.Eq
